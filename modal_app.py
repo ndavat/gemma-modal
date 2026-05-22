@@ -39,7 +39,7 @@ vllm_image = (
     .entrypoint([])
     .pip_install(
         "vllm==0.8.5",
-        "huggingface_hub[hf_transfer]==0.26.2",
+        "huggingface_hub[hf_transfer]>=0.30.0",
         "fastapi",
         "uvicorn",
         "python-dotenv",
