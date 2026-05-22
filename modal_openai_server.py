@@ -48,7 +48,7 @@ app = modal.App(APP_NAME)
     scaledown_window=600,
     timeout=600,
 )
-@modal.concurrent(64)
+@modal.concurrent()
 @modal.asgi_app()
 def openai_server():
     """
