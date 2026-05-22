@@ -64,8 +64,8 @@ app = modal.App(APP_NAME)
     volumes={MODEL_DIR: model_volume},
     container_idle_timeout=10 * 60,   # scale to zero after 10 min idle
     timeout=5 * 60,                   # max request timeout
-    allow_concurrent_inputs=32,       # handle parallel requests
 )
+@modal.concurrent(max_inputs=32)
 class VLLMServer:
 
     @modal.enter()
@@ -122,7 +122,9 @@ class VLLMServer:
             stop=request.get("stop", None),
         )
 
-        result_generator = self.engine.generate(prompt, sampling_params, request_id="req-1")
+        import uuid
+        request_id = f"chatcmpl-{uuid.uuid4().hex}"
+        result_generator = self.engine.generate(prompt, sampling_params, request_id=request_id)
         final_output = None
         async for output in result_generator:
             final_output = output
