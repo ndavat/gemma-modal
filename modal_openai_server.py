@@ -47,8 +47,8 @@ app = modal.App(APP_NAME)
     volumes={MODEL_DIR: model_volume},
     scaledown_window=600,
     timeout=600,
-    allow_concurrent_inputs=64,
 )
+@modal.concurrent(64)
 @modal.asgi_app()
 def openai_server():
     """
