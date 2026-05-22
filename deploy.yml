@@ -1,0 +1,72 @@
+name: Deploy Gemma to Modal
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "modal_app.py"
+      - "modal_openai_server.py"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:        # allow manual trigger from GitHub UI
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  deploy:
+    name: Deploy to Modal
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────────────────────
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── Python setup ──────────────────────────────────────────────────────
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      # ── Install Modal ──────────────────────────────────────────────────────
+      - name: Install Modal
+        run: pip install modal
+
+      # ── Authenticate with Modal ────────────────────────────────────────────
+      # Store MODAL_TOKEN_ID and MODAL_TOKEN_SECRET in GitHub Secrets
+      - name: Authenticate with Modal
+        env:
+          MODAL_TOKEN_ID:     ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: |
+          modal token set \
+            --token-id     "$MODAL_TOKEN_ID" \
+            --token-secret "$MODAL_TOKEN_SECRET"
+
+      # ── Create HuggingFace secret in Modal (if HF_TOKEN secret exists) ────
+      - name: Sync HuggingFace secret
+        if: ${{ secrets.HF_TOKEN != '' }}
+        env:
+          MODAL_TOKEN_ID:     ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+          HF_TOKEN:           ${{ secrets.HF_TOKEN }}
+        run: |
+          modal secret create huggingface-secret HF_TOKEN="$HF_TOKEN" --force || \
+          echo "Secret already exists – update it manually if the token changed."
+
+      # ── Deploy ────────────────────────────────────────────────────────────
+      - name: Deploy to Modal
+        env:
+          MODAL_TOKEN_ID:     ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: modal deploy modal_openai_server.py
+
+      # ── Print deployment URL ───────────────────────────────────────────────
+      - name: Show app URL
+        env:
+          MODAL_TOKEN_ID:     ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: |
+          echo "✅ Deployment complete!"
+          modal app list | grep gemma || echo "(run 'modal app list' locally for the URL)"

@@ -1,0 +1,46 @@
+{
+  // ─── GITHUB COPILOT BYOK – CUSTOM OPENAI-COMPATIBLE ENDPOINT ───────────────
+  // Paste your Modal deployment URL from: modal deploy modal_openai_server.py
+  // It looks like: https://YOUR-WORKSPACE--gemma-openai-server-openai-server.modal.run
+
+  // ── Option A: Via github.copilot.chat.customOAIModels (VS Code Insiders) ────
+  "github.copilot.chat.customOAIModels": [
+    {
+      "id": "gemma-4b-it",                               // display name in picker
+      "name": "Gemma 3 4B (Modal)",
+      "modelId": "google/gemma-3-4b-it",                 // must match served_model_name
+      "url": "https://YOUR-WORKSPACE--gemma-openai-server-openai-server.modal.run",
+      "apiKey": "modal-no-key-needed"                    // Modal auth is URL-based
+    }
+  ],
+
+  // ── Option B: Ollama-compatible provider pointing at Modal ──────────────────
+  // In VS Code: Ctrl+Shift+P → "Chat: Manage Language Models" → Add Models → OpenAI Compatible
+  // Enter these values:
+  //   Base URL:  https://YOUR-WORKSPACE--gemma-openai-server-openai-server.modal.run/v1
+  //   API Key:   modal-no-auth  (any non-empty string)
+  //   Model:     google/gemma-3-4b-it
+
+  // ─── GENERAL COPILOT SETTINGS ────────────────────────────────────────────────
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "yaml": true
+  },
+  "github.copilot.editor.enableAutoCompletions": true,
+
+  // ─── COPILOT CHAT DEFAULT MODEL ──────────────────────────────────────────────
+  // After adding via Manage Language Models, set it as default in Copilot menu
+  // or via Command Palette: "GitHub Copilot: Change Completions Model"
+
+  // ─── NOTE ON INLINE COMPLETIONS ──────────────────────────────────────────────
+  // ⚠️  As of May 2026, inline ghost-text completions (Tab key) CANNOT use
+  //    custom/local models. Only Copilot Chat (Ctrl+Alt+I) supports BYOK.
+  //    Inline completions always use GitHub-hosted models (Claude Sonnet, GPT-4o etc.)
+  //    This is a known VS Code limitation – may change in future releases.
+
+  // ─── COPILOT INSTRUCTIONS FOR CODING STYLE ───────────────────────────────────
+  // Create .github/copilot-instructions.md in your repo for persistent instructions
+  // (See the included copilot-instructions.md template)
+}
