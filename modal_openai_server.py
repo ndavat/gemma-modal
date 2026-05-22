@@ -42,7 +42,7 @@ app = modal.App(APP_NAME)
 
 @app.function(
     image=vllm_image,
-    gpu=modal.gpu.A10G(),
+    gpu="A10G",
     secrets=[modal.Secret.from_name("huggingface-secret")],
     volumes={MODEL_DIR: model_volume},
     container_idle_timeout=600,
