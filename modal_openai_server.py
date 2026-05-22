@@ -45,7 +45,7 @@ app = modal.App(APP_NAME)
     gpu="A10G",
     secrets=[modal.Secret.from_name("huggingface-secret")],
     volumes={MODEL_DIR: model_volume},
-    container_idle_timeout=600,
+    scaledown_window=600,
     timeout=600,
     allow_concurrent_inputs=64,
 )
